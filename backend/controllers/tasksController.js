@@ -89,14 +89,20 @@ const eliminarTarea = async (req, res) => {
       const error = new Error("no Existe La tarea");
       return res.status(404).send({ msg: error.message });
     }
-
+    // verificar autenticación
     if (tarea.proyecto.creator.toString() !== req.usuario._id.toString()) {
       const error = new Error("Action no Permitida");
       return res.status(403).send({ msg: error.message });
     }
+
+    // buscar proyecto mediante referencia del tarea y id del proyecto
+    //  al que pertenece la tarea
     const proyecto = await Proyecto.findById(tarea.proyecto._id);
+
+    // eliminando el uid de la tarea del array de tareas del modelo proyecto
     proyecto.tareas.pull(tarea._id);
 
+    // guardando datos en la base de datos y eliminando la tarea a la vez
     await Promise.allSettled([await proyecto.save(), await tarea.deleteOne()]);
     return res.send({ msg: "Tarea eliminada correctamente" });
   } catch (error) {
