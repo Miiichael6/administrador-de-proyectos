@@ -19,9 +19,12 @@ const agregarTarea = async (req, res) => {
 
   try {
     const nuevaTarea = await Tarea.create(data);
-    // alacenar el ID en el proyecto
+    // alacenar el ID de la tarea en el proyecto 
     existeProyecto.tareas.push(nuevaTarea._id);
-    await existeProyecto.save();
+    // guardar los cambios en la base de datos 
+    // Ahora el Proyecto tiene el uid de la tarea recientemente creada en
+    // su array "tareas"
+    await existeProyecto.save(); // guardado correctamente
 
     return res.send(nuevaTarea);
   } catch (error) {
