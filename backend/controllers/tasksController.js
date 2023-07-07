@@ -60,7 +60,8 @@ const actualizarTarea = async (req, res) => {
     const error = new Error("no Existe La tarea");
     return res.status(404).send({ msg: error.message });
   }
-
+  // verificar si el usuario que se registró es el mismo que 
+  // está eliminando la tarea
   if (tarea.proyecto.creator.toString() !== req.usuario._id.toString()) {
     const error = new Error("Action no Permitida");
     return res.status(403).send({ msg: error.message });
