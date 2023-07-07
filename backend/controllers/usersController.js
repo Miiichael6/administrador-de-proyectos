@@ -25,10 +25,12 @@ const postUser = async (req, res) => {
       return res.status(400).send({ msg: error.message });
     }
 
+    // generación de JWT 
     const usuario = await User(data);
     usuario.token = generarId();
     const UserCreated = await usuario.save();
 
+    // configuración para poder verificar cuenta
     emailRegistro({
       nombre: UserCreated.nombre,
       email: UserCreated.email,
@@ -36,17 +38,6 @@ const postUser = async (req, res) => {
     });
 
     return res.send(UserCreated);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const updateUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    // const updatedUser = await
-    return res.send(id);
   } catch (error) {
     console.log(error);
   }
@@ -66,6 +57,7 @@ const autenticar = async (req, res) => {
     return res.status(403).send({ msg: error.message });
   }
 
+  // autenticación mediante mongodb usuarioSchema.pre("save")
   if (await usuario.comprobarPassword(password)) {
     const msg = "everything is fine";
     const allOK = {
@@ -121,7 +113,6 @@ const deleteUser = async (req, res) => {
 
 const I_ForgotMyPassword = async (req, res) => {
   const { email } = req.body;
-  console.log(email);
 
   const usuario = await User.findOne({ email });
   if (!usuario) {
@@ -129,10 +120,12 @@ const I_ForgotMyPassword = async (req, res) => {
     return res.status(400).send({ msg: error.message });
   }
 
+  //  recuperación de contraseña 
   try {
     usuario.token = generarId();
     await usuario.save();
 
+    // configuracion en caso de el usuario olvide su contraseña
     emailOlvidePassword({
       nombre: usuario.nombre,
       email: usuario.email,
@@ -169,6 +162,7 @@ const myNewPassword = async (req, res) => {
 
   const miUsuario = await User.findOne({ token });
 
+  // cambiar la contraseña a una nueva
   if (miUsuario) {
     try {
       miUsuario.password = password;
@@ -184,6 +178,7 @@ const myNewPassword = async (req, res) => {
   }
 };
 
+// obetener el usuario registrado mediante la Request
 const perfil = async (req, res) => {
   const { usuario } = req;
   return res.send(usuario);
